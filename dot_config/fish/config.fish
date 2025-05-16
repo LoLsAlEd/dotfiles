@@ -3,8 +3,7 @@ if status is-interactive
     atuin init fish | source
 end
 
-# Starship Theme
-# https://starship.rs/guide/#fish
+# Starship
 starship init fish | source
 
 # Path additions
@@ -20,5 +19,4 @@ alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 uv generate-shell-completion fish | source
 uvx --generate-shell-completion fish | source
 
-# Zoxide
 zoxide init fish | source
