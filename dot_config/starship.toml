@@ -1,5 +1,12 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Performance settings
+scan_timeout = 30  # Timeout for starship to scan files (in milliseconds)
+command_timeout = 500  # Timeout for commands executed by starship (in milliseconds)
+palette = 'catppuccin_mocha'
+# palette = 'tokyo_night'
+add_newline = true
+
 format = """
 [╭](fg:current_line)\
 $os\
@@ -25,10 +32,6 @@ $username\
 $line_break\
 $character\
 """
-
-palette = 'catppuccin_mocha'
-# palette = 'tokyo_night'
-add_newline = true
 
 [palettes.catppuccin_mocha]
 foreground = '#D9E0EE'
@@ -234,4 +237,7 @@ success_symbol = '[](fg:bold white)'
 error_symbol = '[×](fg:bold red)'
 
 [profiles]
+# Transient prompt configuration
+# Replaces the previous prompt with a simpler one after execution
+# Enable with `enable_transience` in shell
 transient = """$character"""
