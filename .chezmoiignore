@@ -1,1 +1,5 @@
+.github/
+.git/
+install.sh
+LICENSE
 README.md
