@@ -1,0 +1,52 @@
+---
+- name: Machine setup
+  hosts: localhost
+  become: true
+  connection: local
+  gather_facts: true
+  vars:
+    flyctl_version: "0.1.130"
+    pulumi_version: "v3.94.2"
+
+  tasks:
+    - name: Get my user
+      ansible.builtin.set_fact:
+        remote_regular_user: "{{ ansible_env.SUDO_USER or ansible_user_id }}"
+
+    - name: Install a list of packages
+      ansible.builtin.apt:
+        pkg:
+        - curl
+        - ffmpeg
+        - tree
+        - tmux
+      state: present
+      update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install brew packages
+      community.general.homebrew:
+        name:
+          - bat
+          - curlie
+          - doggo
+          - duf
+          - dust
+          - eza
+          - fd
+          - fish
+          - httpie
+          - jq
+          - just
+          - neovim
+          - rclone
+          - ripgrep
+          - starship
+          - tldr
+          - tree
+          - uv
+          - yazi
+          - zoxide
+        state: present
+      become: false
+      when: ansible_distribution == "Ubuntu"
