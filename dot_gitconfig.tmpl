@@ -1,8 +1,9 @@
 [init]
 	defaultBranch = master
+
 [user]
-	name = lolsaled
-	email = 13088744+LoLsAlEd@users.noreply.github.com
+	name = {{ .name | quote }}
+	email = {{ .email | quote }}
 
 [core]
     pager = delta

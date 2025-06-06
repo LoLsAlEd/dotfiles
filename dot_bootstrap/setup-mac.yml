@@ -27,6 +27,8 @@
           - ffmpeg
           - fish
           - gallery-dl
+          - gping
+          - git-delta
           - httpie
           - jq
           - just
