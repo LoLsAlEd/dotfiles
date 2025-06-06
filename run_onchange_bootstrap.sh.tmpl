@@ -1,7 +1,15 @@
 #!/bin/bash
 
-# .bootstrap/setup.yml hash: {{ include "dot_bootstrap/setup-mac.yml" | sha256sum }}
+# .bootstrap/setup-mac.yml hash: {{ include "dot_bootstrap/setup-mac.yml" | sha256sum }}
+# .bootstrap/setup-linux.yml hash: {{ include "dot_bootstrap/setup-linux.yml" | sha256sum }}
 
 if command -v ansible-playbook &> /dev/null; then
-    ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-mac.yml" | quote }} --ask-become-pass
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-mac.yml" | quote }} --ask-become-pass
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-linux.yml" | quote }} --ask-become-pass -vv
+    else
+        echo "Unsupported OS: $OSTYPE"
+        exit 1
+    fi
 fi

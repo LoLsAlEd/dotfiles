@@ -13,6 +13,10 @@
       ansible.builtin.set_fact:
         remote_regular_user: "{{ ansible_env.SUDO_USER or ansible_user_id }}"
 
+    - name: Print all available facts
+      ansible.builtin.debug:
+        var: ansible_distribution
+
     - name: Install a list of packages
       ansible.builtin.apt:
         pkg:
@@ -20,8 +24,8 @@
         - ffmpeg
         - tree
         - tmux
-      state: present
-      update_cache: yes
+        state: present
+        update_cache: yes
       when: ansible_distribution == "Ubuntu"
 
     - name: Install brew packages
@@ -35,6 +39,7 @@
           - eza
           - fd
           - fish
+          - gping
           - httpie
           - jq
           - just
@@ -43,7 +48,6 @@
           - ripgrep
           - starship
           - tldr
-          - tree
           - uv
           - yazi
           - zoxide
