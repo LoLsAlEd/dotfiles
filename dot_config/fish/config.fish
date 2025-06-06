@@ -1,10 +1,9 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
     atuin init fish | source
+    # Starship
+    starship init fish | source
 end
-
-# Starship
-starship init fish | source
 
 # Path additions
 # fish_add_path $HOME/.local/bin
