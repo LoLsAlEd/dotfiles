@@ -10,6 +10,7 @@ end
 
 # Variables
 set -x MANAGARR_CONFIG_FILE $HOME/.config/managarr/config.yml
+export MANPAGER="bat --plain --language=man"
 
 # Alias definitions
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
