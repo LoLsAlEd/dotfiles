@@ -3,6 +3,29 @@ if status is-interactive
     atuin init fish | source
     # Starship
     starship init fish | source
+
+    # Shell completions for CLI tools
+    if command -q chezmoi
+        chezmoi completion fish | source
+    end
+    if command -q kubectl
+        kubectl completion fish | source
+    end
+    if command -q helm
+        helm completion fish | source
+    end
+    if command -q docker
+        docker completion fish | source
+    end
+    if command -q zoxide
+        zoxide init fish | source
+    end
+    if command -q uv
+        uv generate-shell-completion fish | source
+    end
+    if command -q uvx
+        uvx --generate-shell-completion fish | source
+    end
 end
 
 # Path additions
@@ -14,11 +37,5 @@ export MANPAGER="bat --plain --language=man"
 
 # Alias definitions
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-
-# UV Auto-Completion
-uv generate-shell-completion fish | source
-uvx --generate-shell-completion fish | source
-
-zoxide init fish | source
 
 set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
