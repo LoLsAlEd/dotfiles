@@ -1,12 +1,5 @@
 # Set Default Terminal
-{{ if eq .chezmoi.os "darwin" }}
-set-option -g default-shell /opt/homebrew/bin/fish
-{{ else if eq .chezmoi.os "linux" }}
-set-option -g default-shell /home/linuxbrew/.linuxbrew/bin/fish
-{{ else }}
-# Set Default Shell
-set-option -g default-shell /opt/homebrew/bin/fish
-{{ end }}
+set-option -g default-shell {{ lookPath "fish" }}
 
 ## Configuration Options
 # Increase scrollback buffer size from 2000 to 50000 lines

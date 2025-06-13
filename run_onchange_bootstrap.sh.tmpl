@@ -6,14 +6,19 @@
 echo -e "[INFO] Playbook has been updated, running the playbook again."
 
 if command -v ansible-playbook &> /dev/null; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo -e "[INFO] Running Ansible playbook for Mac setup..."
-        ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-mac.yml" | quote }} --ask-become-pass
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo -e "[INFO] Running Ansible playbook for Linux setup..."
-        ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-linux.yml" | quote }} --ask-become-pass -vv
-    else
-        echo -e "[ERROR] Unsupported OS: $OSTYPE"
-        exit 1
-    fi
+    OS="$(uname -s)"
+    case "${OS}" in
+        Darwin*)
+            echo -e "[INFO] Running Ansible playbook for Mac setup..."
+            ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-mac.yml" | quote }} --ask-become-pass
+            ;;
+        Linux*)
+            echo -e "[INFO] Running Ansible playbook for Linux setup..."
+            ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-linux.yml" | quote }} --ask-become-pass -vv
+            ;;
+        *)
+            echo -e "[ERROR] Unsupported OS: ${OS}"
+            exit 1
+            ;;
+    esac
 fi
