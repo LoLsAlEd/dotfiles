@@ -1,0 +1,41 @@
+#!/bin/bash
+
+install_homebrew_linux() {
+    echo -e "[INFO] Installing Homebrew on Linux..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
+    test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.bashrc
+}
+
+install_homebrew_mac() {
+    if ! command -v brew &> /dev/null; then
+        echo -e "[INFO] Installing Homebrew on Mac..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    else
+        echo -e "[INFO] Homebrew already installed on Mac"
+    fi
+}
+
+OS="$(uname -s)"
+case "${OS}" in
+    Linux*)
+        if [ -f /etc/fedora-release ]; then
+            install_homebrew_linux
+        elif [ -f /etc/lsb-release ]; then
+            install_homebrew_linux
+        else
+            echo "[ERROR] Unsupported Linux distribution"
+            exit 1
+        fi
+        ;;
+    Darwin*)
+        install_homebrew_mac
+        ;;
+    *)
+        echo "[ERROR] Unsupported operating system: ${OS}"
+        exit 1
+        ;;
+esac
+
+echo "[SUCCESS] Homebrew installation complete."

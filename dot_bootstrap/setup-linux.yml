@@ -49,6 +49,7 @@
           - eza
           - fd
           - fish
+          - gallery-dl
           - gping
           - git-delta
           - httpie
@@ -62,7 +63,8 @@
           - uv
           - vivid
           - yazi
+          - yt-dlp
           - zoxide
         state: present
       become: false
-      when: ansible_distribution == "Ubuntu"
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Fedora"
