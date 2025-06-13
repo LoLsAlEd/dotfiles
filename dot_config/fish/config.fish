@@ -20,3 +20,5 @@ uv generate-shell-completion fish | source
 uvx --generate-shell-completion fish | source
 
 zoxide init fish | source
+
+set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
