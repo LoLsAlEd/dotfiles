@@ -17,16 +17,26 @@
       ansible.builtin.debug:
         var: ansible_distribution
 
-    - name: Install a list of packages
+    - name: Install core packages on Ubuntu
       ansible.builtin.apt:
         pkg:
-        - curl
-        - ffmpeg
-        - tree
-        - tmux
+          - curl
+          - ffmpeg
+          - tree
+          - tmux
         state: present
         update_cache: yes
       when: ansible_distribution == "Ubuntu"
+
+    - name: Install core packages on Fedora
+      ansible.builtin.dnf:
+        name:
+          - curl
+          - ffmpeg
+          - tree
+          - tmux
+        state: present
+      when: ansible_distribution == "Fedora"
 
     - name: Install brew packages
       community.general.homebrew:

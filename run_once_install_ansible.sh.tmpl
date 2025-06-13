@@ -32,18 +32,19 @@ case "${OS}" in
         elif [ -f /etc/lsb-release ]; then
             install_on_ubuntu
         else
-            echo "Unsupported Linux distribution"
+            echo "[ERROR] Unsupported Linux distribution"
             exit 1
         fi
+        ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-linux.yml" | quote }} --ask-become-pass
         ;;
     Darwin*)
         install_on_mac
-        ansible-playbook ~/.bootstrap/setup-mac.yml --ask-become-pass
+        ansible-playbook {{ joinPath .chezmoi.sourceDir "dot_bootstrap/setup-mac.yml" | quote }} --ask-become-pass
         ;;
     *)
-        echo "Unsupported operating system: ${OS}"
+        echo "[ERROR] Unsupported operating system: ${OS}"
         exit 1
         ;;
 esac
 
-echo "Ansible installation complete."
+echo "[SUCCESS] Ansible installation complete."
