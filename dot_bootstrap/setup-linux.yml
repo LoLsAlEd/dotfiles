@@ -50,6 +50,7 @@
           - starship
           - tldr
           - uv
+          - vivid
           - yazi
           - zoxide
         state: present
