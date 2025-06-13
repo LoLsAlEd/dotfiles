@@ -13,12 +13,17 @@
       ansible.builtin.set_fact:
         remote_regular_user: "{{ ansible_env.SUDO_USER or ansible_user_id }}"
 
+    - name: Print OS
+      ansible.builtin.debug:
+        var: ansible_distribution
+
     - name: Install brew packages
       community.general.homebrew:
         name:
           - bat
           - curl
           - curlie
+          - direnv
           - doggo
           - duf
           - dust
@@ -47,7 +52,7 @@
           - zoxide
         state: present
       become: false
-      when: ansible_distribution == "Darwin"
+      when: ansible_distribution == "MacOSX"
 
     - name: Install brew casks
       community.general.homebrew_cask:
@@ -61,4 +66,4 @@
           - visual-studio-code
         state: present
       become: false
-      when: ansible_distribution == "Darwin"
+      when: ansible_distribution == "MacOSX"

@@ -39,3 +39,5 @@ export MANPAGER="bat --plain --language=man"
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 
 set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
+
+direnv hook fish | source
