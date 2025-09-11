@@ -1,10 +1,20 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
-    atuin init fish | source
+
     # Starship
-    starship init fish | source
+    if command -q starship
+        starship init fish | source
+    end
+
+    # Man page viewer
+    if command -q bat
+        export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
+    end
 
     # Shell completions for CLI tools
+    if command -q atuin
+        atuin init fish | source
+    end
     if command -q chezmoi
         chezmoi completion fish | source
     end
@@ -33,11 +43,14 @@ end
 
 # Variables
 set -x MANAGARR_CONFIG_FILE $HOME/.config/managarr/config.yml
-export MANPAGER="bat --plain --language=man"
 
 # Alias definitions
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 
-set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
+if command -q vivid
+    set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
+end
 
-direnv hook fish | source
+if command -q vivid
+    direnv hook fish | source
+end
