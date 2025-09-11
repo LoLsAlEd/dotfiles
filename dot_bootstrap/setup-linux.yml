@@ -57,6 +57,7 @@
           - httpie
           - jq
           - just
+          - micro
           - neovim
           - rclone
           - ripgrep
@@ -66,6 +67,7 @@
           - uv
           - vivid
           - yazi
+          - yq
           - yt-dlp
           - zoxide
         state: present

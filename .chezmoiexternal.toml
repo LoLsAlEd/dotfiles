@@ -20,6 +20,15 @@ stripComponents = 3
 refreshPeriod = "168h"
 include = ["*/themes/**"]
 
+[".config/micro/colorschemes"]
+type = "archive"
+url = "https://github.com/catppuccin/micro/archive/main.tar.gz"
+exact = true
+stripComponents = 2
+refreshPeriod = "168h"
+include = ["*/themes/**"]
+# set colorscheme catppuccin-mocha
+
 [".bash-preexec.sh"]
 type = "file"
 url = "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh"

@@ -16,6 +16,10 @@ if status is-interactive
         export MANPAGER="sh -c 'awk '\''{ gsub(/\x1B\[[0-9;]*m/, \"\", \$0); gsub(/.\x08/, \"\", \$0); print }'\'' | bat -p -lman'"
     end
 
+    if command -q micro
+        export "MICRO_TRUECOLOR=1"
+    end
+
     # Shell completions for CLI tools
     if command -q atuin
         atuin init fish | source
