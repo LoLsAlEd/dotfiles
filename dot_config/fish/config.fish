@@ -1,6 +1,11 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
 
+    # Set up fzf key bindings
+    if command -q fzf
+        fzf --fish | source
+    end
+
     # Starship
     if command -q starship
         starship init fish | source

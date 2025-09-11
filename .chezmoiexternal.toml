@@ -22,5 +22,5 @@ include = ["*/themes/**"]
 
 [".bash-preexec.sh"]
 type = "file"
-url = "https://raw.githubusercontent.com/catppuccin/fzf/refs/heads/main/themes/catppuccin-fzf-mocha.fish"
+url = "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh"
 refreshPeriod = "168h"
