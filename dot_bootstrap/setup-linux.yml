@@ -17,7 +17,7 @@
       ansible.builtin.debug:
         var: ansible_distribution
 
-    - name: Install core packages on Ubuntu
+    - name: Install core packages on Ubuntu/Debian
       ansible.builtin.apt:
         pkg:
           - curl
@@ -26,7 +26,7 @@
           - tmux
         state: present
         update_cache: yes
-      when: ansible_distribution == "Ubuntu"
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
 
     - name: Install core packages on Fedora
       ansible.builtin.dnf:
@@ -42,6 +42,7 @@
       community.general.homebrew:
         name:
           - bat
+          - bat-extras
           - curlie
           - doggo
           - duf
@@ -61,6 +62,7 @@
           - ripgrep
           - starship
           - tldr
+          - tmux
           - uv
           - vivid
           - yazi
@@ -68,4 +70,4 @@
           - zoxide
         state: present
       become: false
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Fedora"
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" or ansible_distribution == "Fedora"

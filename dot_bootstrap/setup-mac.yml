@@ -21,6 +21,7 @@
       community.general.homebrew:
         name:
           - bat
+          - bat-extras
           - curl
           - curlie
           - direnv
