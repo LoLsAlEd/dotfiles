@@ -20,8 +20,10 @@
     - name: Install brew packages
       community.general.homebrew:
         name:
+          - aria2
           - bat
           - bat-extras
+          - broot
           - curl
           - curlie
           - direnv
@@ -29,14 +31,19 @@
           - duf
           - dust
           - eza
+          - fastfetch
           - fd
           - ffmpeg
           - fish
           - fisher
+          - fzf
           - gallery-dl
-          - gping
+          - gdu
           - git-delta
+          - go-task
+          - gping
           - httpie
+          - hyperfine
           - jq
           - just
           - micro
@@ -44,10 +51,12 @@
           - rclone
           - ripgrep
           - starship
-          - tldr
+          - tlrc
           - tmux
+          - topgrade
           - tree
           - uv
+          - viddy
           - vivid
           - yazi
           - yq

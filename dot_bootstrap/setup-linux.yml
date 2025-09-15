@@ -43,17 +43,23 @@
         name:
           - bat
           - bat-extras
+          - broot
           - curlie
+          - direnv
           - doggo
           - duf
           - dust
           - eza
+          - fastfetch
           - fd
           - fish
           - fisher
+          - fzf
           - gallery-dl
-          - gping
+          - gdu
           - git-delta
+          - go-task
+          - gping
           - httpie
           - jq
           - just
@@ -62,9 +68,11 @@
           - rclone
           - ripgrep
           - starship
-          - tldr
+          - tlrc
           - tmux
+          - topgrade
           - uv
+          - viddy
           - vivid
           - yazi
           - yq

@@ -63,3 +63,5 @@ end
 if command -q vivid
     direnv hook fish | source
 end
+
+export PATH="/opt/homebrew/sbin:$PATH"
