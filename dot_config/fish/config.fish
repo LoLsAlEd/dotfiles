@@ -33,7 +33,7 @@ if status is-interactive
     if command -q helm
         helm completion fish | source
     end
-    if command -q docker
+    if command -q docker; and test (systemd-detect-virt) != "wsl"
         docker completion fish | source
     end
     if command -q zoxide
