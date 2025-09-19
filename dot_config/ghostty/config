@@ -1,6 +1,6 @@
 command = /opt/homebrew/bin/fish --login --interactive
 
-theme = catppuccin-mocha
+theme = Catppuccin Mocha
 font-family = "FiraCode Nerd Font Mono"
 
 macos-option-as-alt = left

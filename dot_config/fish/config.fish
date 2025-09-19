@@ -47,6 +47,8 @@ if status is-interactive
     end
 end
 
+set -x SHELL $(which fish)
+
 # Path additions
 # fish_add_path $HOME/.local/bin
 
