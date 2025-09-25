@@ -13,8 +13,22 @@ name = {{ $name | quote }}
 email = {{ $email | quote }}
 
 [edit]
+{{- if lookPath "code" }}
 command = "code"
 args = ["--wait"]
+{{- else if lookPath "nvim" }}
+command = "nvim"
+{{- else if lookPath "vim" }}
+command = "vim"
+{{- else if lookPath "nano" }}
+command = "nano"
+{{- end }}
 
 [diff]
+{{- if lookPath "delta" }}
 pager = "delta"
+{{- else if lookPath "bat" }}
+pager = "bat --plain"
+{{- else }}
+pager = "less -R"
+{{- end }}

@@ -33,7 +33,7 @@ if status is-interactive
     if command -q helm
         helm completion fish | source
     end
-    if command -q docker; and test (systemd-detect-virt) != "wsl"
+    if command -q docker; and test (grep -i Microsoft /proc/version)
         docker completion fish | source
     end
     if command -q zoxide
@@ -56,8 +56,6 @@ set -x SHELL $(which fish)
 set -x MANAGARR_CONFIG_FILE $HOME/.config/managarr/config.yml
 
 # Alias definitions
-alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-
 if command -q vivid
     set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
 end
@@ -66,4 +64,7 @@ if command -q vivid
     direnv hook fish | source
 end
 
+{{ if eq .chezmoi.os "darwin" }}
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 export PATH="/opt/homebrew/sbin:$PATH"
+{{ end }}
