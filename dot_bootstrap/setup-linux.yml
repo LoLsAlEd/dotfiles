@@ -13,30 +13,64 @@
       ansible.builtin.set_fact:
         remote_regular_user: "{{ ansible_env.SUDO_USER or ansible_user_id }}"
 
-    - name: Print all available facts
+    - name: Print distribution information
       ansible.builtin.debug:
-        var: ansible_distribution
+        msg: >-
+          {{ ansible_distribution }} {{ ansible_distribution_version }}
+          (family: {{ ansible_os_family }})
 
-    - name: Install core packages on Ubuntu/Debian
+    - name: Define list of core packages
+      ansible.builtin.set_fact:
+        core_packages:
+          - curl
+          - ffmpeg
+          - tree
+          - tmux
+
+    - name: Install core packages on Debian family
       ansible.builtin.apt:
-        pkg:
-          - curl
-          - ffmpeg
-          - tree
-          - tmux
+        pkg: "{{ core_packages }}"
         state: present
-        update_cache: yes
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+        update_cache: true
+      when: ansible_os_family == "Debian"
 
-    - name: Install core packages on Fedora
+    - name: Install core packages on RedHat family using dnf
       ansible.builtin.dnf:
-        name:
-          - curl
-          - ffmpeg
-          - tree
-          - tmux
+        name: "{{ core_packages }}"
         state: present
-      when: ansible_distribution == "Fedora"
+      when:
+        - ansible_os_family == "RedHat"
+        - ansible_pkg_mgr == "dnf"
+
+    - name: Install core packages on RedHat family using yum
+      ansible.builtin.yum:
+        name: "{{ core_packages }}"
+        state: present
+      when:
+        - ansible_os_family == "RedHat"
+        - ansible_pkg_mgr == "yum"
+
+    - name: Install core packages on SUSE family
+      ansible.builtin.zypper:
+        name: "{{ core_packages }}"
+        state: present
+      when: ansible_os_family == "Suse"
+
+    - name: Install core packages on other Linux distributions
+      ansible.builtin.package:
+        name: "{{ core_packages }}"
+        state: present
+      when:
+        - ansible_system == "Linux"
+        - ansible_os_family not in ["Debian", "RedHat", "Suse"]
+
+    - name: Check for Homebrew availability
+      ansible.builtin.shell: command -v brew
+      args:
+        executable: /bin/bash
+      register: brew_lookup
+      changed_when: false
+      failed_when: false
 
     - name: Install brew packages
       community.general.homebrew:
@@ -80,4 +114,6 @@
           - zoxide
         state: present
       become: false
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian" or ansible_distribution == "Fedora"
+      when:
+        - ansible_system == "Linux"
+        - brew_lookup.rc == 0
