@@ -114,6 +114,6 @@
           - zoxide
         state: present
       become: false
-      when:
-        - ansible_system == "Linux"
-        - brew_lookup.rc == 0
+      # when:
+      #   - ansible_system == "Linux"
+      #   - brew_lookup.rc == 0
