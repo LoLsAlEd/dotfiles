@@ -1,0 +1,5 @@
+Host gitlab-osdev.apps.emejfm3nyed1862295.australiacentral.aroapp.io
+    HostName gitlab-osdev.apps.emejfm3nyed1862295.australiacentral.aroapp.io
+    User git
+    IdentityFile ~/.ssh/id_ed25519_gitlab_work
+    IdentitiesOnly yes
