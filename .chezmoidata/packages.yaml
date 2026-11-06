@@ -20,6 +20,7 @@ packages:
       - fzf
       - gallery-dl
       - gdu
+      - gh
       - git-delta
       - go-task
       - gping

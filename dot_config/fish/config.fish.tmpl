@@ -1,3 +1,14 @@
+{{ if eq .chezmoi.os "darwin" -}}
+# Initialize Homebrew before checking for tools used by interactive hooks.
+if command -q brew
+    command brew shellenv fish | source
+else if test -x /opt/homebrew/bin/brew
+    /opt/homebrew/bin/brew shellenv fish | source
+else if test -x /usr/local/bin/brew
+    /usr/local/bin/brew shellenv fish | source
+end
+
+{{ end -}}
 if status is-interactive
     # Commands to run in interactive sessions can go here
 
@@ -66,7 +77,6 @@ end
 
 {{ if eq .chezmoi.os "darwin" }}
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-export PATH="/opt/homebrew/sbin:$PATH"
 {{- end }}
 
 # Entire CLI shell completion

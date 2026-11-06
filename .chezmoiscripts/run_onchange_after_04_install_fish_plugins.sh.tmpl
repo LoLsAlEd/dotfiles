@@ -1,0 +1,54 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+set -euo pipefail
+
+# fish_plugins hash: {{ include "dot_config/fish/fish_plugins" | sha256sum }}
+
+if command -v brew >/dev/null 2>&1; then
+    brew_bin="$(command -v brew)"
+elif [[ -x /opt/homebrew/bin/brew ]]; then
+    brew_bin=/opt/homebrew/bin/brew
+elif [[ -x /usr/local/bin/brew ]]; then
+    brew_bin=/usr/local/bin/brew
+else
+    echo "[ERROR] Homebrew is required to install Fish plugins." >&2
+    exit 1
+fi
+homebrew_shellenv="$("${brew_bin}" shellenv bash)"
+eval "${homebrew_shellenv}"
+
+plugins_file="${XDG_CONFIG_HOME:-${HOME}/.config}/fish/fish_plugins"
+plugins_snapshot="$(mktemp)"
+cp "${plugins_file}" "${plugins_snapshot}"
+trap 'cp "${plugins_snapshot}" "${plugins_file}"; rm -f "${plugins_snapshot}"' EXIT
+
+# Let Fisher own replay, replacing only the exact version previously deployed here.
+legacy_replay="$(dirname "${plugins_file}")/functions/replay.fish"
+if [[ -f "${legacy_replay}" && ! -L "${legacy_replay}" ]]; then
+    legacy_hash="$(shasum -a 256 "${legacy_replay}")"
+    if [[ "${legacy_hash%% *}" == "0aef934d5157b2cc474e7ed9207727d413c04cf25dd396477ea9fbffc279818b" ]]; then
+        rm "${legacy_replay}"
+    fi
+fi
+
+# Fish, rather than Bash, expands the variables in this program.
+# shellcheck disable=SC2016
+fish --command '
+    if not type --query fisher
+        echo "[ERROR] Fisher is not installed." >&2
+        exit 1
+    end
+    set --local expected (string match --regex -- "^[^\\s]+\$" < "$__fish_config_dir/fish_plugins")
+    fisher update
+    set --local update_status $status
+    set --local installed (fisher list)
+    for plugin in $expected
+        if not contains -- "$plugin" $installed
+            echo "[ERROR] Fish plugin was not installed: $plugin" >&2
+            exit 1
+        end
+    end
+    exit $update_status
+' </dev/null
+{{ end -}}

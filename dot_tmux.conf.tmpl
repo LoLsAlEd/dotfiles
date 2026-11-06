@@ -1,5 +1,15 @@
-# Set Default Terminal
-set-option -g default-shell {{ lookPath "fish" }}
+{{- $fish := lookPath "fish" -}}
+{{- if and (not $fish) (eq .chezmoi.os "darwin") -}}
+{{-   if eq .chezmoi.arch "arm64" -}}
+{{-     $fish = "/opt/homebrew/bin/fish" -}}
+{{-   else -}}
+{{-     $fish = "/usr/local/bin/fish" -}}
+{{-   end -}}
+{{- end -}}
+{{- if $fish }}
+# Use the Homebrew path on first apply, before Fish is installed or on PATH.
+set-option -g default-shell {{ $fish | quote }}
+{{- end }}
 
 ## Configuration Options
 # Increase scrollback buffer size from 2000 to 50000 lines

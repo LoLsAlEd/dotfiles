@@ -58,26 +58,37 @@ append_shellenv_statement() {
     shell_name="$(basename "${SHELL:-}")"
     case "${shell_name}" in
         bash)
-            default_file="${HOME}/.bashrc"
+            if [[ "$(uname -s)" == Darwin* ]]; then
+                # Login Bash reads only the first existing profile.
+                for default_file in "${HOME}/.bash_profile" "${HOME}/.bash_login" "${HOME}/.profile"; do
+                    [[ -f "${default_file}" ]] && break
+                done
+                [[ -f "${default_file}" ]] || default_file="${HOME}/.bash_profile"
+            else
+                default_file="${HOME}/.bashrc"
+            fi
             ;;
         zsh)
-            default_file="${HOME}/.zprofile"
+            default_file="${ZDOTDIR:-${HOME}}/.zprofile"
             ;;
         fish)
-            default_file="${HOME}/.config/fish/config.fish"
+            # The managed macOS Fish config initializes Homebrew before hooks.
+            [[ "$(uname -s)" == Darwin* ]] && return
+            default_file="${XDG_CONFIG_HOME:-${HOME}/.config}/fish/config.fish"
             ;;
         *)
             default_file="${HOME}/.profile"
+            shell_name="sh"
             ;;
     esac
 
     mkdir -p "$(dirname "${default_file}")"
 
-    local eval_statement="eval \"\$(${brew_prefix}/bin/brew shellenv)\""
+    local eval_statement="eval \"\$(${brew_prefix}/bin/brew shellenv ${shell_name})\""
 
     if [[ "${shell_name}" == "fish" ]]; then
         local fish_statement
-        fish_statement="status --is-interactive; and eval (${brew_prefix}/bin/brew shellenv)"
+        fish_statement="${brew_prefix}/bin/brew shellenv fish | source"
         if ! grep -Fq "brew shellenv" "${default_file}" 2>/dev/null; then
             printf '\n%s\n' "${fish_statement}" >> "${default_file}"
         fi
@@ -134,6 +145,7 @@ install_homebrew_mac() {
 
     homebrew_shellenv="$("${brew_bin}" shellenv bash)"
     eval "${homebrew_shellenv}"
+    append_shellenv_statement
 }
 
 OS="$(uname -s)"
