@@ -33,7 +33,7 @@ if status is-interactive
     if command -q helm
         helm completion fish | source
     end
-    if command -q docker; and test (grep -i Microsoft /proc/version)
+    if command -q docker; and test (grep -i Microsoft /proc/version > /dev/null 2>&1)
         docker completion fish | source
     end
     if command -q zoxide
@@ -67,4 +67,9 @@ end
 {{ if eq .chezmoi.os "darwin" }}
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 export PATH="/opt/homebrew/sbin:$PATH"
-{{ end }}
+{{- end }}
+
+# Entire CLI shell completion
+if command -q entire
+    entire completion fish | source
+end
