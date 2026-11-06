@@ -1,0 +1,9 @@
+[".tmux/plugins/tpm"]
+type = "git-repo"
+url = "https://github.com/tmux-plugins/tpm"
+refreshPeriod = "168h"
+
+[".bash-preexec.sh"]
+type = "file"
+url = "https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh"
+refreshPeriod = "168h"

@@ -4,3 +4,10 @@ install.sh
 LICENSE
 README.md
 .gitignore
+.githooks/
+.pre-commit-config.yaml
+
+{{ if or (eq .chezmoi.command "diff") (eq .chezmoi.command "status") -}}
+# Cache maintenance checks run during apply without cluttering change previews.
+.chezmoiscripts/03_rebuild_bat_cache.sh
+{{ end -}}

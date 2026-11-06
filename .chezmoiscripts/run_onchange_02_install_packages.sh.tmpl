@@ -1,0 +1,34 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+
+set -euo pipefail
+
+find_homebrew() {
+    if command -v brew >/dev/null 2>&1; then
+        command -v brew
+    elif [[ -x /opt/homebrew/bin/brew ]]; then
+        printf '%s\n' /opt/homebrew/bin/brew
+    elif [[ -x /usr/local/bin/brew ]]; then
+        printf '%s\n' /usr/local/bin/brew
+    else
+        return 1
+    fi
+}
+
+if ! brew_bin="$(find_homebrew)"; then
+    echo "[ERROR] Homebrew not found. Run the Homebrew bootstrap before installing packages." >&2
+    exit 1
+fi
+
+homebrew_shellenv="$("${brew_bin}" shellenv bash)"
+eval "${homebrew_shellenv}"
+
+"${brew_bin}" bundle --no-upgrade --file=- <<'BREWFILE'
+{{ range .packages.darwin.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.darwin.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+BREWFILE
+{{ end -}}

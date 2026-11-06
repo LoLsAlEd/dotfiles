@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+        args: [--assume-in-merge]
+      - id: check-json
+        exclude: \.tmpl$
+      - id: check-toml
+        exclude: \.tmpl$
+      - id: check-yaml
+        exclude: \.tmpl$
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: check-shell-scripts
+        name: Check shell scripts and chezmoi shell templates
+        entry: bash .githooks/check-shell-scripts.sh
+        language: system
+        files: \.(sh|fish)(\.tmpl)?$
+        types: [text]
