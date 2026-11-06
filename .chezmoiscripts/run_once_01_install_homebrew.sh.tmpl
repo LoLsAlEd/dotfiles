@@ -104,13 +104,36 @@ install_homebrew_linux() {
     append_shellenv_statement
 }
 
-install_homebrew_mac() {
-    if ! command -v brew >/dev/null 2>&1; then
-        echo -e "[INFO] Installing Homebrew on Mac..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+find_homebrew() {
+    if command -v brew >/dev/null 2>&1; then
+        command -v brew
+    elif [[ -x /opt/homebrew/bin/brew ]]; then
+        printf '%s\n' /opt/homebrew/bin/brew
+    elif [[ -x /usr/local/bin/brew ]]; then
+        printf '%s\n' /usr/local/bin/brew
     else
-        echo -e "[INFO] Homebrew already installed on Mac"
+        return 1
     fi
+}
+
+install_homebrew_mac() {
+    local brew_bin homebrew_shellenv install_script
+
+    if brew_bin="$(find_homebrew)"; then
+        echo -e "[INFO] Homebrew already installed on Mac"
+    else
+        echo -e "[INFO] Installing Homebrew on Mac..."
+        install_script="$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        /bin/bash -c "${install_script}"
+
+        if ! brew_bin="$(find_homebrew)"; then
+            echo "[ERROR] Homebrew not found after installation." >&2
+            exit 1
+        fi
+    fi
+
+    homebrew_shellenv="$("${brew_bin}" shellenv bash)"
+    eval "${homebrew_shellenv}"
 }
 
 OS="$(uname -s)"

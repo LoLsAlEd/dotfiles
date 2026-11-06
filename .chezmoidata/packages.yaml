@@ -1,0 +1,55 @@
+packages:
+  darwin:
+    brews:
+      - aria2
+      - bat
+      - bat-extras
+      - broot
+      - curl
+      - curlie
+      - direnv
+      - doggo
+      - duf
+      - dust
+      - eza
+      - fastfetch
+      - fd
+      - ffmpeg
+      - fish
+      - fisher
+      - fzf
+      - gallery-dl
+      - gdu
+      - git-delta
+      - go-task
+      - gping
+      - httpie
+      - hyperfine
+      - jq
+      - just
+      - micro
+      - neovim
+      - prek
+      - rclone
+      - ripgrep
+      - shellcheck
+      - starship
+      - tlrc
+      - tmux
+      - topgrade
+      - tree
+      - uv
+      - viddy
+      - vivid
+      - yazi
+      - yq
+      - yt-dlp
+      - zoxide
+    casks:
+      - font-fira-code-nerd-font
+      - font-jetbrains-mono-nerd-font
+      - font-hack-nerd-font
+      - font-meslo-lg-nerd-font
+      - ghostty
+      - iterm2
+      - visual-studio-code
