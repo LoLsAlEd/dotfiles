@@ -1,0 +1,22 @@
+{{- $fish := lookPath "fish" -}}
+{{- if not $fish -}}
+{{-   if eq .chezmoi.os "darwin" -}}
+{{-     if eq .chezmoi.arch "arm64" -}}
+{{-       $fish = "/opt/homebrew/bin/fish" -}}
+{{-     else -}}
+{{-       $fish = "/usr/local/bin/fish" -}}
+{{-     end -}}
+{{-   else -}}
+{{-     $fish = "fish" -}}
+{{-   end -}}
+{{- end -}}
+command = {{ $fish | quote }} --login --interactive
+
+theme = Catppuccin Mocha
+font-family = "FiraCode Nerd Font Mono"
+
+macos-option-as-alt = left
+
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+keybind = shift+enter=text:\x1b\r

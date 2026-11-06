@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "chezmoi": {
+      "source": "cosgroveb/chezmoi-skill",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "3ecab23e002f56e5ba88748b8672be78edd399bdaa7bdb01a40205c2ecdef3dc"
+    }
+  }
+}

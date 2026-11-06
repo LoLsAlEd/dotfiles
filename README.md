@@ -40,6 +40,12 @@ review and stage those fixes before retrying the commit.
 ### Initial Setup
 1. **Homebrew** - Bootstrapped before package installation
 2. **Homebrew Bundle** - Installs the declared macOS formulae and casks
+3. **Fish plugins** - Synchronizes the declared Fisher plugins after applying files
+
+Homebrew is initialized before Fish loads prompts and completions. macOS shell
+paths support both Apple Silicon (`/opt/homebrew`) and Intel (`/usr/local`).
+GitHub CLI is installed for Git credential handling; authenticate your account
+with `gh auth login` before using authenticated GitHub HTTPS operations.
 
 ### Managing macOS packages
 
@@ -79,7 +85,8 @@ only the package script:
 ### Configuration Files
 - **Git**: Delta diff viewer, improved merge conflicts
 - **Tmux**: Catppuccin theme, custom key bindings
-- **Fish**: Completions for CLI tools, custom functions
+- **Fish**: Completions for CLI tools, custom functions, and Fisher plugins from
+  `dot_config/fish/fish_plugins`; changes to the list are synchronized on apply
 - **Starship**: Cross-shell prompt configuration
 - **Bat**: Catppuccin themes downloaded to `~/.config/bat/themes` by chezmoi
   externals, with Mocha selected. After apply, the cache is rebuilt only when
@@ -93,8 +100,9 @@ External downloads are grouped by category in `.chezmoiexternals/*.toml`:
 `themes.toml` contains Catppuccin themes, and `plugins.toml` contains TPM and
 bash-preexec.
 Setup and maintenance scripts live in `.chezmoiscripts/`; their numbered names
-keep Homebrew setup before package installation, and the bat cache rebuild runs
-after files and externals are applied.
+keep Homebrew setup before package installation. The bat cache rebuild and Fish
+plugin synchronization run after files and externals are applied. Fish plugin
+installation currently targets macOS; Linux package management remains deferred.
 
 ## Directory Structure
 
@@ -107,7 +115,8 @@ after files and externals are applied.
 ├── .chezmoiscripts/        # Setup and maintenance scripts
 │   ├── run_once_01_install_homebrew.sh.tmpl
 │   ├── run_onchange_02_install_packages.sh.tmpl
-│   └── run_after_03_rebuild_bat_cache.sh
+│   ├── run_after_03_rebuild_bat_cache.sh
+│   └── run_onchange_after_04_install_fish_plugins.sh.tmpl
 └── dot_config/             # Application configs
     ├── fish/               # Fish shell configuration
     ├── bat/                # Bat configuration

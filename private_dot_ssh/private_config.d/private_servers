@@ -1,0 +1,54 @@
+# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
+Host megumin
+    HostName 192.168.1.117
+    Port 6969
+    User lolsaled
+    ForwardAgent yes
+    # RequestTTY yes
+    # RemoteCommand /usr/local/bin/fish
+    SetEnv TERM=xterm-256color
+    IdentityFile ~/.ssh/id_ed25519
+
+Host pi
+    HostName 192.168.1.2
+    ForwardAgent yes
+    User dietpi
+    IdentityFile ~/.ssh/id_ed25519
+
+Host desktop
+    hostname 192.168.1.12
+    User cottrell
+
+Host feral
+    HostName cottus.feralhosting.com
+    User lolsaled
+
+Host steamdeck
+    HostName 192.168.1.5
+    User deck
+    ForwardAgent yes
+
+# This SSH config file can be passed to 'ssh -F'.
+# This file is created by Lima, but not used by Lima itself currently.
+# Modifications to this file will be lost on restarting the Lima instance.
+Host lima-ubuntu
+  IdentityFile "/Users/momiji/.lima/_config/user"
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+  NoHostAuthenticationForLocalhost yes
+  GSSAPIAuthentication no
+  PreferredAuthentications publickey
+  Compression no
+  BatchMode yes
+  IdentitiesOnly yes
+  Ciphers "^aes128-gcm@openssh.com,aes256-gcm@openssh.com"
+  User momiji
+  ControlMaster auto
+  ControlPath "/Users/momiji/.lima/ubuntu/ssh.sock"
+  ControlPersist yes
+  Hostname 127.0.0.1
+  Port 54241
+
+  Host dietpi.tail3009c.ts.net
+    User dietpi
+    HostName dietpi.tail3009c.ts.net
