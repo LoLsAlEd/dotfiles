@@ -1,0 +1,4 @@
+{{- $gitSigningKey := get . "gitSigningKey" | default "" -}}
+{{ if and (eq .chezmoi.os "darwin") $gitSigningKey -}}
+{{ .email }} {{ $gitSigningKey }}
+{{ end -}}

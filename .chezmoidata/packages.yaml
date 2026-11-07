@@ -2,6 +2,7 @@ packages:
   darwin:
     brews:
       - aria2
+      - atuin
       - bat
       - bat-extras
       - broot
@@ -47,10 +48,13 @@ packages:
       - yt-dlp
       - zoxide
     casks:
+      - 1password-cli
       - font-fira-code-nerd-font
       - font-jetbrains-mono-nerd-font
       - font-hack-nerd-font
       - font-meslo-lg-nerd-font
       - ghostty
       - iterm2
+      - qlmarkdown
+      - rectangle
       - visual-studio-code

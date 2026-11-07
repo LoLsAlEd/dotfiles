@@ -6,6 +6,13 @@ README.md
 .gitignore
 .githooks/
 .pre-commit-config.yaml
+.claude/
+.agents/
+skills-lock.json
+
+{{ if not (and (eq .chezmoi.os "darwin") (get . "gitSigningKey")) -}}
+.config/git/allowed_signers
+{{ end -}}
 
 {{ if or (eq .chezmoi.command "diff") (eq .chezmoi.command "status") -}}
 # Cache maintenance checks run during apply without cluttering change previews.
