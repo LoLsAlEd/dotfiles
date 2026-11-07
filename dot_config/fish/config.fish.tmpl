@@ -71,7 +71,7 @@ if command -q vivid
     set -x LS_COLORS "$(vivid generate catppuccin-mocha)"
 end
 
-if command -q vivid
+if command -q direnv
     direnv hook fish | source
 end
 

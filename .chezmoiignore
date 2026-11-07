@@ -10,6 +10,10 @@ README.md
 .agents/
 skills-lock.json
 
+{{ if not (and (eq .chezmoi.os "darwin") (get . "gitSigningKey")) -}}
+.config/git/allowed_signers
+{{ end -}}
+
 {{ if or (eq .chezmoi.command "diff") (eq .chezmoi.command "status") -}}
 # Cache maintenance checks run during apply without cluttering change previews.
 .chezmoiscripts/03_rebuild_bat_cache.sh

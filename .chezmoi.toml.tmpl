@@ -3,6 +3,10 @@
 
 {{- $name := promptStringOnce . "name" "Name" -}}
 {{- $email := promptStringOnce . "email" "Email address" -}}
+{{- $gitSigningKey := get . "gitSigningKey" | default "" -}}
+{{- if and $interactive (eq .chezmoi.os "darwin") -}}
+{{-   $gitSigningKey = promptStringOnce . "gitSigningKey" "1Password Git signing public key (leave empty to disable signing)" "" -}}
+{{- end -}}
 
 {{- if $interactive -}}
 {{-   writeToStdout "💡 Tip: you can re-enter your name and email with `chezmoi init --data=false`.\n" -}}
@@ -11,6 +15,7 @@
 [data]
 name = {{ $name | quote }}
 email = {{ $email | quote }}
+gitSigningKey = {{ $gitSigningKey | quote }}
 
 [edit]
 {{- if lookPath "code" }}
@@ -32,3 +37,24 @@ pager = "bat --plain"
 {{- else }}
 pager = "less -R"
 {{- end }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{- $brewDirs := list "/opt/homebrew/bin" "/usr/local/bin" -}}
+{{- $op := or (lookPath "op") (findExecutable "op" $brewDirs) -}}
+{{- if not $op -}}
+{{-   $brew := or (lookPath "brew") (findExecutable "brew" $brewDirs) -}}
+{{-   if $brew -}}
+{{-     $op = joinPath (dir $brew) "op" -}}
+{{-   else if eq .chezmoi.arch "arm64" -}}
+{{-     $op = "/opt/homebrew/bin/op" -}}
+{{-   else -}}
+{{-     $op = "/usr/local/bin/op" -}}
+{{-   end -}}
+{{- end -}}
+[onepassword]
+command = {{ $op | quote }}
+
+[hooks.read-source-state.pre]
+command = "/bin/bash"
+args = [{{ joinPath .chezmoi.sourceDir ".install-password-manager.sh" | quote }}]
+{{ end -}}

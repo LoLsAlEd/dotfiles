@@ -6,15 +6,19 @@
 {{-     $gh = "/usr/local/bin/gh" -}}
 {{-   end -}}
 {{- end -}}
+{{- $gitSigningKey := get . "gitSigningKey" | default "" -}}
 [init]
 	defaultBranch = master
 
 [user]
 	name = {{ .name | quote }}
 	email = {{ .email | quote }}
-
+{{ if and (eq .chezmoi.os "darwin") $gitSigningKey -}}
+    signingkey = {{ $gitSigningKey | quote }}
+{{ end }}
 [core]
     pager = delta
+    excludesFile = "~/.config/git/ignore"
 
 [interactive]
     diffFilter = delta --color-only
@@ -29,6 +33,18 @@
 [merge]
     conflictstyle = zdiff3
 
+{{ if and (eq .chezmoi.os "darwin") $gitSigningKey -}}
+[commit]
+    gpgsign = true
+
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+    allowedSignersFile = "~/.config/git/allowed_signers"
+
+{{ end -}}
 {{ if $gh -}}
 [credential "https://github.com"]
         helper =
