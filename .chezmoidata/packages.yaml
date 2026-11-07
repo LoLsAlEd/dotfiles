@@ -56,4 +56,5 @@ packages:
       - ghostty
       - iterm2
       - qlmarkdown
+      - rectangle
       - visual-studio-code

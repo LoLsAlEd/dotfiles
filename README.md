@@ -84,8 +84,9 @@ only the package script:
 - **Media Tools**: FFmpeg, Gallery-dl, Yt-dlp
 - **Networking**: Curlie, HTTPie, Doggo, Gping
 - **Fonts**: Nerd Font variants (Mac only)
-- **Mac Apps**: QLMarkdown for Markdown Quick Look previews; 1Password CLI for
-  integration with a separately installed 1Password desktop app
+- **Mac Apps**: Rectangle for window management, QLMarkdown for Markdown Quick Look
+  previews, and 1Password CLI for integration with a separately installed
+  1Password desktop app
 
 ### 1Password setup and optional Git signing
 
