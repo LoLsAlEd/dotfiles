@@ -1,5 +1,7 @@
 {{- $fish := lookPath "fish" -}}
-{{- if and (not $fish) (eq .chezmoi.os "darwin") -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   $fish = joinPath .chezmoi.homeDir ".local/bin/fish" -}}
+{{- else if and (not $fish) (eq .chezmoi.os "darwin") -}}
 {{-   if eq .chezmoi.arch "arm64" -}}
 {{-     $fish = "/opt/homebrew/bin/fish" -}}
 {{-   else -}}
@@ -7,7 +9,7 @@
 {{-   end -}}
 {{- end -}}
 {{- if $fish }}
-# Use the Homebrew path on first apply, before Fish is installed or on PATH.
+# Use the platform installation path on first apply, before Fish is installed.
 set-option -g default-shell {{ $fish | quote }}
 {{- end }}
 

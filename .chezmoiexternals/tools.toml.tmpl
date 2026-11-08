@@ -1,0 +1,67 @@
+{{ if eq .chezmoi.os "linux" -}}
+{{- $arch := get (dict "amd64" "x86_64" "arm64" "aarch64") .chezmoi.arch -}}
+{{- if not $arch -}}
+{{-   fail (printf "Linux tool downloads support amd64 and arm64 only (found %s)" .chezmoi.arch) -}}
+{{- end -}}
+
+# Track upstream stable releases independently of the distribution's packages.
+[".local/bin/atuin"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "atuinsh/atuin" (printf "atuin-%s-unknown-linux-musl.tar.gz" $arch) | quote }}
+path = "atuin"
+stripComponents = 1
+executable = true
+refreshPeriod = "168h"
+
+[".local/bin/bat"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "sharkdp/bat" (printf "bat-*-%s-unknown-linux-musl.tar.gz" $arch) | quote }}
+path = "bat"
+stripComponents = 1
+executable = true
+refreshPeriod = "168h"
+
+[".local/bin/eza"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "eza-community/eza" (printf "eza_%s-unknown-linux-gnu.tar.gz" $arch) | quote }}
+path = "./eza"
+executable = true
+refreshPeriod = "168h"
+
+# Fish's standalone Linux binary includes its functions and completions.
+[".local/bin/fish"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "fish-shell/fish-shell" (printf "fish-*-linux-%s.tar.xz" $arch) | quote }}
+path = "fish"
+executable = true
+refreshPeriod = "168h"
+
+[".local/bin/fzf"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "junegunn/fzf" (printf "fzf-*-linux_%s.tar.gz" .chezmoi.arch) | quote }}
+path = "fzf"
+executable = true
+refreshPeriod = "168h"
+
+[".local/bin/rg"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "BurntSushi/ripgrep" (printf "ripgrep-*-%s-unknown-linux-musl.tar.gz" $arch) | quote }}
+path = "rg"
+stripComponents = 1
+executable = true
+refreshPeriod = "168h"
+
+[".local/bin/starship"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "starship/starship" (printf "starship-%s-unknown-linux-musl.tar.gz" $arch) | quote }}
+path = "starship"
+executable = true
+refreshPeriod = "168h"
+
+[".local/bin/zoxide"]
+type = "archive-file"
+url = {{ gitHubLatestReleaseAssetURL "ajeetdsouza/zoxide" (printf "zoxide-*-%s-unknown-linux-musl.tar.gz" $arch) | quote }}
+path = "zoxide"
+executable = true
+refreshPeriod = "168h"
+{{ end -}}

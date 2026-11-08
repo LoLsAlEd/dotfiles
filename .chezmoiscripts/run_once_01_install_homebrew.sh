@@ -2,52 +2,8 @@
 
 set -euo pipefail
 
-detect_linux_distribution() {
-    if [[ -r /etc/os-release ]]; then
-        # shellcheck source=/dev/null
-        . /etc/os-release
-        printf '%s\n' "${ID:-unknown}"
-    elif command -v lsb_release >/dev/null 2>&1; then
-        lsb_release -si | tr '[:upper:]' '[:lower:]'
-    else
-        printf '%s\n' "unknown"
-    fi
-}
-
-run_as_root() {
-    if [[ ${EUID} -eq 0 ]]; then
-        "$@"
-    elif command -v sudo >/dev/null 2>&1; then
-        sudo "$@"
-    else
-        echo "[ERROR] Unable to escalate privileges to run '$*'." >&2
-        exit 1
-    fi
-}
-
-ensure_curl() {
-    if command -v curl >/dev/null 2>&1; then
-        return
-    fi
-
-    echo -e "[INFO] curl not found. Attempting to install..."
-
-    if command -v apt-get >/dev/null 2>&1; then
-        run_as_root apt-get update -y
-        run_as_root apt-get install -y curl
-    elif command -v dnf >/dev/null 2>&1; then
-        run_as_root dnf install -y curl
-    elif command -v yum >/dev/null 2>&1; then
-        run_as_root yum install -y curl
-    elif command -v pacman >/dev/null 2>&1; then
-        run_as_root pacman -Sy --noconfirm curl
-    elif command -v zypper >/dev/null 2>&1; then
-        run_as_root zypper --non-interactive install curl
-    else
-        echo "[ERROR] curl is required but no supported package manager was detected." >&2
-        exit 1
-    fi
-}
+# Ubuntu uses APT; keep this filename for the macOS 1Password bootstrap hook.
+[[ "$(uname -s)" == Darwin ]] || exit 0
 
 append_shellenv_statement() {
     local brew_prefix
@@ -99,22 +55,6 @@ append_shellenv_statement() {
     fi
 }
 
-install_homebrew_linux() {
-    if command -v brew >/dev/null 2>&1; then
-        echo -e "[INFO] Homebrew already installed on Linux"
-        return
-    fi
-
-    echo -e "[INFO] Installing Homebrew on Linux..."
-    ensure_curl
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-    test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
-    test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-
-    append_shellenv_statement
-}
-
 find_homebrew() {
     if command -v brew >/dev/null 2>&1; then
         command -v brew
@@ -148,27 +88,6 @@ install_homebrew_mac() {
     append_shellenv_statement
 }
 
-OS="$(uname -s)"
-case "${OS}" in
-    Linux*)
-        linux_id="$(detect_linux_distribution)"
-        case "${linux_id}" in
-            debian|ubuntu|linuxmint|elementary|pop|zorin|fedora|rhel|centos|rocky|almalinux|amzn|amazon|sles|opensuse*|arch|manjaro|endeavouros|unknown)
-                install_homebrew_linux
-                ;;
-            *)
-                echo -e "[WARN] Detected Linux distribution '${linux_id}' is untested; attempting Homebrew install anyway."
-                install_homebrew_linux
-                ;;
-        esac
-        ;;
-    Darwin*)
-        install_homebrew_mac
-        ;;
-    *)
-        echo "[ERROR] Unsupported operating system: ${OS}"
-        exit 1
-        ;;
-esac
+install_homebrew_mac
 
 echo "[SUCCESS] Homebrew installation complete."

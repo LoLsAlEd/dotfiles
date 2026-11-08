@@ -8,6 +8,10 @@ else if test -x /usr/local/bin/brew
     /usr/local/bin/brew shellenv fish | source
 end
 
+{{ else if eq .chezmoi.os "linux" -}}
+# User-local commands must be available before prompt and plugin initialization.
+fish_add_path --global --move $HOME/.local/bin
+
 {{ end -}}
 if status is-interactive
     # Commands to run in interactive sessions can go here
@@ -58,10 +62,7 @@ if status is-interactive
     end
 end
 
-set -x SHELL $(which fish)
-
-# Path additions
-# fish_add_path $HOME/.local/bin
+set -x SHELL (status fish-path)
 
 # Variables
 set -x MANAGARR_CONFIG_FILE $HOME/.config/managarr/config.yml

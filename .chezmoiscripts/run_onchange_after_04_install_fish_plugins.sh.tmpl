@@ -1,10 +1,11 @@
-{{ if eq .chezmoi.os "darwin" -}}
+{{ if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
 #!/bin/bash
 
 set -euo pipefail
 
 # fish_plugins hash: {{ include "dot_config/fish/fish_plugins" | sha256sum }}
 
+{{ if eq .chezmoi.os "darwin" -}}
 if command -v brew >/dev/null 2>&1; then
     brew_bin="$(command -v brew)"
 elif [[ -x /opt/homebrew/bin/brew ]]; then
@@ -17,6 +18,9 @@ else
 fi
 homebrew_shellenv="$("${brew_bin}" shellenv bash)"
 eval "${homebrew_shellenv}"
+{{ else -}}
+export PATH="${HOME}/.local/bin:${PATH}"
+{{ end -}}
 
 plugins_file="${XDG_CONFIG_HOME:-${HOME}/.config}/fish/fish_plugins"
 plugins_snapshot="$(mktemp)"
@@ -26,7 +30,11 @@ trap 'cp "${plugins_snapshot}" "${plugins_file}"; rm -f "${plugins_snapshot}"' E
 # Let Fisher own replay, replacing only the exact version previously deployed here.
 legacy_replay="$(dirname "${plugins_file}")/functions/replay.fish"
 if [[ -f "${legacy_replay}" && ! -L "${legacy_replay}" ]]; then
-    legacy_hash="$(shasum -a 256 "${legacy_replay}")"
+    if command -v sha256sum >/dev/null 2>&1; then
+        legacy_hash="$(sha256sum "${legacy_replay}")"
+    else
+        legacy_hash="$(shasum -a 256 "${legacy_replay}")"
+    fi
     if [[ "${legacy_hash%% *}" == "0aef934d5157b2cc474e7ed9207727d413c04cf25dd396477ea9fbffc279818b" ]]; then
         rm "${legacy_replay}"
     fi
@@ -36,8 +44,18 @@ fi
 # shellcheck disable=SC2016
 fish --command '
     if not type --query fisher
+{{ if eq .chezmoi.os "linux" -}}
+        set --local bootstrap (mktemp)
+        command curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish --output "$bootstrap"; or exit 1
+        source "$bootstrap"
+        set --local bootstrap_status $status
+        command rm -f "$bootstrap"
+        test $bootstrap_status -eq 0; or exit $bootstrap_status
+        fisher install jorgebucaran/fisher; or exit 1
+{{ else -}}
         echo "[ERROR] Fisher is not installed." >&2
         exit 1
+{{ end -}}
     end
     set --local expected (string match --regex -- "^[^\\s]+\$" < "$__fish_config_dir/fish_plugins")
     fisher update

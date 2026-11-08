@@ -1,7 +1,9 @@
 Include ~/.ssh/config.d/*
 
+{{ if eq .chezmoi.os "darwin" -}}
 IgnoreUnknown UseKeychain
 
 Host *
     AddKeysToAgent yes
     UseKeychain yes
+{{ end -}}

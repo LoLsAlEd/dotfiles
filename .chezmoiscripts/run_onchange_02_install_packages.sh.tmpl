@@ -31,4 +31,53 @@ brew {{ . | quote }}
 cask {{ . | quote }}
 {{ end -}}
 BREWFILE
+{{ else if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+
+set -euo pipefail
+
+# Check at runtime so unsupported Linux systems fail before installing anything.
+# shellcheck source=/dev/null
+. /etc/os-release
+if [[ "${ID:-}" != ubuntu || "${VERSION_ID:-}" != 26.04 ]]; then
+    echo "[ERROR] Linux package bootstrap supports Ubuntu 26.04 LTS only (found ${PRETTY_NAME:-unknown})." >&2
+    exit 1
+fi
+
+run_as_root() {
+    if [[ ${EUID} -eq 0 ]]; then
+        "$@"
+    elif command -v sudo >/dev/null 2>&1; then
+        sudo "$@"
+    else
+        echo "[ERROR] Package installation requires root or sudo." >&2
+        exit 1
+    fi
+}
+
+packages=(
+{{ range .packages.ubuntu.apt -}}
+    {{ . | shellQuote }}
+{{ end -}}
+)
+run_as_root apt-get update
+run_as_root env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends --no-upgrade "${packages[@]}"
+
+# Use the same command names as macOS without changing system-owned paths.
+mkdir -p "${HOME}/.local/bin"
+ensure_command_link() {
+    local name="$1" target="$2" destination="${HOME}/.local/bin/$1"
+    if command -v "${name}" >/dev/null 2>&1; then
+        return
+    fi
+    if [[ -L "${destination}" && "$(readlink "${destination}")" == "${target}" ]]; then
+        return
+    fi
+    if [[ -e "${destination}" || -L "${destination}" ]]; then
+        echo "[ERROR] Refusing to replace existing ${destination}; provide ${name} on PATH or move this file." >&2
+        exit 1
+    fi
+    ln -s "${target}" "${destination}"
+}
+ensure_command_link fd /usr/bin/fdfind
 {{ end -}}

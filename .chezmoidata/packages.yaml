@@ -58,3 +58,17 @@ packages:
       - qlmarkdown
       - rectangle
       - visual-studio-code
+  ubuntu:
+    apt:
+      - ca-certificates
+      - curl
+      - fd-find
+      - git
+      - git-delta
+      - jq
+      - less
+      - micro
+      - openssh-client
+      - procps
+      - tmux
+      - unzip
