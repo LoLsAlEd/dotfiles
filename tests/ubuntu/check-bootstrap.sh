@@ -22,7 +22,24 @@ name = "Ubuntu container test"
 email = "ubuntu-test@example.invalid"
 CONFIG
 original_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
+# Cover replacement of the previous APT bootstrap's bat symlink too.
+if [[ "$(id -un)" == dotfiles ]]; then
+    mkdir -p "${HOME}/.local/bin"
+    ln -s /usr/bin/batcat "${HOME}/.local/bin/bat"
+fi
 sh ./install.sh </dev/null
+
+for tool in atuin bat eza fish fzf rg starship zoxide; do
+    test "$(command -v "${tool}")" = "${HOME}/.local/bin/${tool}"
+    test -x "${HOME}/.local/bin/${tool}"
+    test ! -L "${HOME}/.local/bin/${tool}"
+done
+for package in atuin bat eza fish fzf ripgrep starship zoxide; do
+    if dpkg-query -W -f='${Status}\n' "${package}" 2>/dev/null | grep -qx 'install ok installed'; then
+        echo "[ERROR] ${package} was installed through APT." >&2
+        exit 1
+    fi
+done
 
 for tool in chezmoi fish starship atuin git delta tmux fzf bat eza fd rg zoxide jq micro curl ssh less unzip ps; do
     command -v "${tool}" >/dev/null
@@ -45,7 +62,7 @@ if git config --global --get commit.gpgsign; then exit 1; fi
 
 fish --no-execute "${HOME}/.config/fish/config.fish"
 env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    fish --interactive tests/ubuntu/check-fish.fish > "${temporary_dir}/fish-output" 2> "${temporary_dir}/fish-errors"
+    "${HOME}/.local/bin/fish" --interactive tests/ubuntu/check-fish.fish > "${temporary_dir}/fish-output" 2> "${temporary_dir}/fish-errors"
 cat "${temporary_dir}/fish-output"
 if [[ -s "${temporary_dir}/fish-errors" ]]; then
     cat "${temporary_dir}/fish-errors" >&2
@@ -54,7 +71,7 @@ fi
 bat --list-themes --color=never | grep -q '^Catppuccin Mocha$'
 bat --paging=never README.md >/dev/null
 tmux -L chezmoi-test new-session -d -s bootstrap
-test "$(tmux -L chezmoi-test show-option -gv default-shell)" = /usr/bin/fish
+test "$(tmux -L chezmoi-test show-option -gv default-shell)" = "${HOME}/.local/bin/fish"
 tmux -L chezmoi-test kill-server
 
 # Check actual managed files and cache timestamps, rather than only exit codes.

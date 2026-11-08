@@ -2,10 +2,10 @@
 
 set -euo pipefail
 
-if command -v bat >/dev/null 2>&1; then
+if [[ "$(uname -s)" == Linux && -x "${HOME}/.local/bin/bat" ]]; then
+    bat_bin="${HOME}/.local/bin/bat"
+elif command -v bat >/dev/null 2>&1; then
     bat_bin="$(command -v bat)"
-elif command -v batcat >/dev/null 2>&1; then
-    bat_bin="$(command -v batcat)"
 elif [[ -x /opt/homebrew/bin/bat ]]; then
     bat_bin=/opt/homebrew/bin/bat
 elif [[ -x /usr/local/bin/bat ]]; then

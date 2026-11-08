@@ -9,7 +9,7 @@ end
 bind up | string match --quiet '*_atuin_bind_up*'; or exit 1
 bind ctrl-r | string match --quiet '*_atuin_search*'; or exit 1
 contains -- $HOME/.local/bin $PATH; or exit 1
-test "$SHELL" = /usr/bin/fish; or exit 1
+test "$SHELL" = $HOME/.local/bin/fish; or exit 1
 ls >/dev/null; or exit 1
 ll >/dev/null; or exit 1
 l >/dev/null; or exit 1

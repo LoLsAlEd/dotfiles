@@ -60,14 +60,9 @@ packages:
       - visual-studio-code
   ubuntu:
     apt:
-      - atuin
-      - bat
       - ca-certificates
       - curl
-      - eza
       - fd-find
-      - fish
-      - fzf
       - git
       - git-delta
       - jq
@@ -75,8 +70,5 @@ packages:
       - micro
       - openssh-client
       - procps
-      - ripgrep
-      - starship
       - tmux
       - unzip
-      - zoxide

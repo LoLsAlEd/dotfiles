@@ -3,8 +3,8 @@
 This repo contains the configuration to setup my machines. This is using [Chezmoi](https://chezmoi.io), the dotfile manager to setup the install.
 
 Automated package installation supports macOS with Homebrew and Ubuntu 26.04 LTS
-with APT. Ubuntu uses a minimal set of shell essentials; macOS keeps the full
-application and development tool collection.
+with APT and upstream GitHub releases. Ubuntu uses a minimal set of shell
+essentials; macOS keeps the full application and development tool collection.
 
 ## How to run
 
@@ -34,18 +34,22 @@ sudo apt-get install -y ca-certificates curl git
 The bootstrap installs Fish, Starship, Atuin, Git/Delta, tmux, fzf, bat, eza, fd,
 ripgrep, zoxide, jq, and Micro, plus their runtime prerequisites. It does not
 install Homebrew, desktop apps, 1Password, or additional developer toolchains.
-Fisher and the shared Fish plugins are downloaded from their upstream projects.
-Ubuntu Fish uses modern Up-arrow bindings for Atuin because the packaged Atuin
-version otherwise emits the removed `bind -k` syntax; Ctrl-R remains enabled.
+Fish, Starship, Atuin, fzf, bat, eza, ripgrep, and zoxide are installed from the
+latest stable GitHub releases through chezmoi externals. Fisher and the shared
+Fish plugins are also downloaded upstream. Both operating systems use the same
+Atuin initialization.
 SSH uses normal keys or your existing agent; the macOS 1Password agent and Lima
 host configuration are excluded. Atuin is ready for local history; account login,
 existing history import, and synchronization are optional manual steps.
 
-Start `fish` to use the configured shell. Tmux also launches Fish. To make it
-your account's login shell, optionally run:
+Start `~/.local/bin/fish` to use the configured shell. Tmux also launches this
+Fish binary. To make it your account's login shell, optionally register its path
+in `/etc/shells` and change your login shell:
 
 ```shell
-chsh -s /usr/bin/fish
+fish_path="$HOME/.local/bin/fish"
+grep -Fxq "$fish_path" /etc/shells || printf '%s\n' "$fish_path" | sudo tee -a /etc/shells
+chsh -s "$fish_path"
 ```
 
 Log out and back in after changing the login shell. The bootstrap itself leaves
@@ -74,9 +78,11 @@ review and stage those fixes before retrying the commit.
 
 ### Initial Setup
 
-On Ubuntu, APT installs the declared essentials first; bat cache maintenance and
-Fish plugin synchronization run after files and externals have been applied.
-Package installation works both as root and through sudo.
+On Ubuntu, APT installs the remaining system packages. Chezmoi externals install
+the eight upstream tools into `~/.local/bin`; bat cache maintenance and Fish
+plugin synchronization run after files and externals have been applied. APT
+installation works both as root and through sudo; the upstream tools are owned
+by the account running chezmoi.
 
 On macOS:
 
@@ -119,8 +125,21 @@ only the package script:
 ### Managing Ubuntu packages
 
 Edit `packages.ubuntu.apt` in `.chezmoidata/packages.yaml`, then run
-`chezmoi apply --refresh-externals --force`. All core tools, including Starship
-and Atuin, use Ubuntu packages; Fisher is bootstrapped upstream.
+`chezmoi apply --refresh-externals --force`. APT provides Git/Delta, tmux, fd,
+jq, Micro, and system prerequisites.
+
+The eight upstream tools are declared in `.chezmoiexternals/tools.toml.tmpl`.
+Chezmoi selects each project's latest stable GitHub release for Linux ARM64 or
+x86-64 and extracts executable binaries into `~/.local/bin`. Fish uses its
+standalone build, including functions and completions. These downloads are
+independent of the distribution's package manager; Fedora and Debian system
+package installation is not implemented yet.
+
+Run `chezmoi apply --refresh-externals --force` to install or update the tools.
+Release versions are resolved when chezmoi reads the source, so an apply can
+upgrade binaries without a repository change. Existing APT copies remain
+installed; `~/.local/bin` takes precedence in Fish and tmux uses the upstream
+Fish path. The old `~/.local/bin/bat` symlink is replaced by the upstream binary.
 
 The package script runs on first apply and when its rendered contents change.
 It refreshes APT indexes and installs missing packages using `--no-upgrade` and
@@ -130,12 +149,12 @@ on the next apply. To restore a manually removed package, use the package-script
 rerun command in the macOS section above; it selects the current OS automatically.
 Only Ubuntu 26.04 is supported by the Linux package bootstrap.
 
-Ubuntu's `batcat` and `fdfind` commands are exposed as `bat` and `fd` through
-links in `~/.local/bin`, which Fish adds to PATH before loading hooks. Existing
-commands are respected, and unrelated files are never overwritten. For Bash
-sessions, add `~/.local/bin` to PATH or start a fresh login session so Ubuntu's
-standard profile picks it up. Bat cache maintenance also detects `batcat`
-directly, so it works on the first apply.
+Ubuntu's `fdfind` command is exposed as `fd` through a link in `~/.local/bin`.
+Existing `fd` commands are respected, and unrelated files are never overwritten.
+Fish adds `~/.local/bin` to PATH before loading hooks. For Bash sessions, run
+`export PATH="$HOME/.local/bin:$PATH"` or start a fresh login session so Ubuntu's
+standard profile picks it up. Bat cache maintenance finds the upstream binary
+even before a new shell is started.
 
 ### Ubuntu container test
 
@@ -169,7 +188,8 @@ the current checkout, including uncommitted changes, into the image; it does not
 mount your home, SSH keys, or credentials. Only bootstrap prerequisites are
 preinstalled. Synthetic identity values keep the real installer noninteractive.
 
-Checks cover installed commands, interactive Fish startup and plugins, wrapper
+Checks cover the upstream binary paths and absence of their APT packages,
+replacement of the old bat symlink, interactive Fish startup and plugins, wrapper
 functions, bat themes, tmux's shell, portable SSH configuration, unchanged login
 shells, and a stable second apply that skips package/plugin installation and bat
 cache rebuilding. Containers are removed automatically; the reusable test image
@@ -281,9 +301,9 @@ If it does not render, check System Settings > General > Login Items & Extension
   `~/.config/eza/theme.yml`; the Fish wrapper lets the native theme take
   precedence over vivid's `LS_COLORS` for eza.
 
-External downloads are grouped by category in `.chezmoiexternals/*.toml`:
+External downloads are grouped by category in `.chezmoiexternals/`:
 `themes.toml` contains Catppuccin themes, and `plugins.toml` contains TPM and
-bash-preexec.
+bash-preexec. `tools.toml.tmpl` installs the latest upstream Linux binaries.
 Setup and maintenance scripts live in `.chezmoiscripts/`; their numbered names
 keep macOS Homebrew setup before package installation. The bat cache rebuild and
 Fish plugin synchronization run after files and externals are applied on both
@@ -296,7 +316,8 @@ macOS and Ubuntu.
 │   └── packages.yaml       # macOS formulae/casks and Ubuntu APT essentials
 ├── .chezmoiexternals/      # External downloads by category
 │   ├── plugins.toml        # TPM and bash-preexec
-│   └── themes.toml         # Catppuccin themes for Atuin, bat, eza, and Micro
+│   ├── themes.toml         # Catppuccin themes for Atuin, bat, eza, and Micro
+│   └── tools.toml.tmpl     # Latest upstream Linux tool binaries
 ├── .chezmoiscripts/        # Setup and maintenance scripts
 │   ├── run_once_01_install_homebrew.sh
 │   ├── run_onchange_02_install_packages.sh.tmpl
