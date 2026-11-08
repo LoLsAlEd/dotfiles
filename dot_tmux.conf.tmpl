@@ -5,9 +5,11 @@
 {{-   else -}}
 {{-     $fish = "/usr/local/bin/fish" -}}
 {{-   end -}}
+{{- else if and (not $fish) (eq .chezmoi.os "linux") -}}
+{{-   $fish = "/usr/bin/fish" -}}
 {{- end -}}
 {{- if $fish }}
-# Use the Homebrew path on first apply, before Fish is installed or on PATH.
+# Use the platform installation path on first apply, before Fish is installed.
 set-option -g default-shell {{ $fish | quote }}
 {{- end }}
 

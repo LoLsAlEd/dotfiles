@@ -9,6 +9,13 @@ README.md
 .claude/
 .agents/
 skills-lock.json
+tests/
+.dockerignore
+
+{{ if ne .chezmoi.os "darwin" -}}
+.ssh/config.d/1password
+.config/ghostty
+{{ end -}}
 
 {{ if not (and (eq .chezmoi.os "darwin") (get . "gitSigningKey")) -}}
 .config/git/allowed_signers

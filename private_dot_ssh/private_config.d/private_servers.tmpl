@@ -28,6 +28,7 @@ Host steamdeck
     User deck
     ForwardAgent yes
 
+{{ if eq .chezmoi.os "darwin" -}}
 # This SSH config file can be passed to 'ssh -F'.
 # This file is created by Lima, but not used by Lima itself currently.
 # Modifications to this file will be lost on restarting the Lima instance.
@@ -49,6 +50,7 @@ Host lima-ubuntu
   Hostname 127.0.0.1
   Port 54241
 
-  Host dietpi.tail3009c.ts.net
+{{ end -}}
+Host dietpi.tail3009c.ts.net
     User dietpi
     HostName dietpi.tail3009c.ts.net

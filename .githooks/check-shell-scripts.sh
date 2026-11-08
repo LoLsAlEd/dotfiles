@@ -22,12 +22,14 @@ check_script() {
 for source_file in "$@"; do
     case "${source_file}" in
         *.tmpl)
-            for target_os in darwin linux; do
-                echo "Checking ${source_file} (${target_os})"
+            for target in darwin:arm64 darwin:amd64 linux:arm64; do
+                target_os="${target%:*}"
+                target_arch="${target#*:}"
+                echo "Checking ${source_file} (${target})"
                 rendered_file="${temporary_dir}/rendered-script"
                 chezmoi --config /dev/null --config-format toml \
                     --source "${repo_root}" \
-                    --override-data "{\"name\":\"Hook validation\",\"email\":\"hooks@example.invalid\",\"chezmoi\":{\"os\":\"${target_os}\"}}" \
+                    --override-data "{\"name\":\"Hook validation\",\"email\":\"hooks@example.invalid\",\"chezmoi\":{\"os\":\"${target_os}\",\"arch\":\"${target_arch}\",\"osRelease\":{\"id\":\"ubuntu\",\"versionID\":\"26.04\"}}}" \
                     execute-template --file "${repo_root}/${source_file}" > "${rendered_file}"
                 if [[ -s "${rendered_file}" ]]; then
                     check_script "${source_file}" "${rendered_file}"

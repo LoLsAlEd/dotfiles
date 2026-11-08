@@ -8,6 +8,10 @@ else if test -x /usr/local/bin/brew
     /usr/local/bin/brew shellenv fish | source
 end
 
+{{ else if eq .chezmoi.os "linux" -}}
+# User-local commands must be available before prompt and plugin initialization.
+fish_add_path --global $HOME/.local/bin
+
 {{ end -}}
 if status is-interactive
     # Commands to run in interactive sessions can go here
@@ -33,7 +37,17 @@ if status is-interactive
 
     # Shell completions for CLI tools
     if command -q atuin
+{{ if eq .chezmoi.os "linux" -}}
+        # Ubuntu's Atuin 18.8 emits bind -k, removed in Fish 4.1. Keep its
+        # search functions and Ctrl-R binding, and bind Up using Fish key names.
+        atuin init fish --disable-up-arrow | source
+        if not set -q ATUIN_NOBIND
+            bind up _atuin_bind_up
+            bind -M insert up _atuin_bind_up
+        end
+{{ else -}}
         atuin init fish | source
+{{ end -}}
     end
     if command -q chezmoi
         chezmoi completion fish | source
@@ -58,10 +72,7 @@ if status is-interactive
     end
 end
 
-set -x SHELL $(which fish)
-
-# Path additions
-# fish_add_path $HOME/.local/bin
+set -x SHELL (status fish-path)
 
 # Variables
 set -x MANAGARR_CONFIG_FILE $HOME/.config/managarr/config.yml

@@ -58,3 +58,25 @@ packages:
       - qlmarkdown
       - rectangle
       - visual-studio-code
+  ubuntu:
+    apt:
+      - atuin
+      - bat
+      - ca-certificates
+      - curl
+      - eza
+      - fd-find
+      - fish
+      - fzf
+      - git
+      - git-delta
+      - jq
+      - less
+      - micro
+      - openssh-client
+      - procps
+      - ripgrep
+      - starship
+      - tmux
+      - unzip
+      - zoxide
